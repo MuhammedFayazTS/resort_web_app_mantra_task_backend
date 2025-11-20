@@ -1,6 +1,7 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import { errorHandler } from 'middlewares/errorHandler.js';
 
 import routes from '@/routes/index.routes.js';
 
@@ -21,6 +22,8 @@ app.use(express.json());
 const port = process.env.PORT ?? '3005';
 
 app.use(routes)
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Restaurant app backend listening on port:${port}`);
