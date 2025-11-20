@@ -1,6 +1,7 @@
 import express from 'express';
 
 import bookingRoutes from './booking.routes.js';
+import packageRoutes from './package.routes.js';
 
 const router = express.Router();
 const API_PREFIX = '/api';
@@ -14,5 +15,6 @@ router.get(API_PREFIX, (req, res) => {
 });
 
 router.use(`${API_PREFIX}/bookings`, bookingRoutes);
+router.use(`${API_PREFIX}/packages`, packageRoutes);
 
 export default router;

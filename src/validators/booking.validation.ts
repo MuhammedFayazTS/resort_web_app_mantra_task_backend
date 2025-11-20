@@ -12,7 +12,7 @@ export const bookingValidationSchema = z.object({
     adults: z.number().min(1, "At least 1 adult required"),
     children: z.number().min(0),
 
-    packageType: z.string().min(1, "Select a room type"),
+    packageId: z.string().min(1, "Package ID is required"),
 
     accommodation: z.boolean().optional(),
     adventureActivities: z.boolean().optional(),

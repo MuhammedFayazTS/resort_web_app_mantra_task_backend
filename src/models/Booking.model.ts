@@ -16,7 +16,7 @@ const BookingSchema = new mongoose.Schema(
         children: { type: Number, required: true },
 
         packageType: {
-            id: { type: mongoose.Schema.Types.ObjectId, ref: "Package", required: true },
+            packageId: { type: mongoose.Schema.Types.ObjectId, ref: "Package", required: true },
             title: { type: String, required: true }
         },
 

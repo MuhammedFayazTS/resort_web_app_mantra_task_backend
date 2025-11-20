@@ -2,11 +2,27 @@ import { Request, Response } from "express"
 import z, { ZodError } from "zod";
 
 import Booking from "@/models/Booking.model.js";
+import PackageModel from "@/models/Package.model.js";
 import { bookingValidationSchema } from "@/validators/booking.validation.js";
 
 export const addNewBooking = async (req: Request, res: Response) => {
     try {
         const bookingData = bookingValidationSchema.parse(req.body);
+        const packageId = bookingData.packageId;
+
+        const packageDetails = await PackageModel.findById(packageId);
+
+        if (!packageDetails) {
+            throw new Error("Invalid package ID");
+        }
+
+        const packageType = {
+            packageId,
+            title: packageDetails.title
+        }
+
+        Object.assign(bookingData, { packageType });
+
         const newBooking = await Booking.create(bookingData);
         res.status(201).json({
             success: true,
