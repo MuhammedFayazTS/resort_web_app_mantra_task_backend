@@ -8,6 +8,7 @@ const packageSchema = new mongoose.Schema({
         adult: { type: Number, required: true },
         child: { type: Number, required: true }
     },
+    services: [{ type: mongoose.Schema.Types.ObjectId, ref: "Service" }]
 });
 
 export default mongoose.model("Package", packageSchema);

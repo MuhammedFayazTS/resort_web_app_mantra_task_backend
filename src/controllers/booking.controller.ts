@@ -12,7 +12,7 @@ export const addNewBooking = async (req: Request, res: Response) => {
         const packageId = bookingData.packageId;
         const serviceIds = bookingData.serviceIds;
 
-        const packageDetails = await PackageModel.findById(packageId).select("_id title").exec();;
+        const packageDetails = await PackageModel.findById(packageId).select("_id title services").exec();;
 
         if (!packageDetails) {
             throw new Error("Invalid package ID");
@@ -25,8 +25,18 @@ export const addNewBooking = async (req: Request, res: Response) => {
 
         Object.assign(bookingData, { packageType });
 
+        const servicesFromPackage = packageDetails.services;
+
+        let serviceSIdForFetching = serviceIds ?? [];
+        // check if package has services
+        // TODO:  add the service ids from the frontend as well
+        if (servicesFromPackage.length > 0) {
+            serviceSIdForFetching =
+                servicesFromPackage.length > 0 ? servicesFromPackage.map(service => service.toString()) : [];
+        }
+
         const servicesDetails = await ServicesModel.find({
-            _id: { $in: serviceIds ?? [] }
+            _id: { $in: serviceSIdForFetching }
         }).select("_id title").exec();
 
         const services = servicesDetails.length > 0 ? servicesDetails.map(service => ({
