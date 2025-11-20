@@ -20,11 +20,14 @@ const BookingSchema = new mongoose.Schema(
             title: { type: String, required: true }
         },
 
-        status: { type: String, enum: ["booked", "checkedIn", "checkedOut", "cancelled"], default: "booked" },
+        services: [
+            {
+                serviceId: { type: mongoose.Schema.Types.ObjectId, ref: "Service" },
+                title: { type: String }
+            }
+        ],
 
-        accommodation: { type: Boolean, default: false },
-        adventureActivities: { type: Boolean, default: false },
-        wellnessSpa: { type: Boolean, default: false },
+        status: { type: String, enum: ["booked", "checkedIn", "checkedOut", "cancelled"], default: "booked" },
 
         specialRequest: { type: String }
     },

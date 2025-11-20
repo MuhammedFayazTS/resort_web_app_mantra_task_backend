@@ -14,9 +14,7 @@ export const bookingValidationSchema = z.object({
 
     packageId: z.string().min(1, "Package ID is required"),
 
-    accommodation: z.boolean().optional(),
-    adventureActivities: z.boolean().optional(),
-    wellnessSpa: z.boolean().optional(),
+    serviceIds: z.array(z.string()).optional(),
 
     specialRequest: z.string().optional()
 })

@@ -1,12 +1,7 @@
-import mongoose from "mongoose";
-
-import connectDB from "../src/config/db.js";
 import PackageModel from "../src/models/Package.model.js";
 
 export async function packageSeed() {
     try {
-        await connectDB();
-
         const packages = [
             {
                 title: "Family Staycation",
@@ -31,8 +26,6 @@ export async function packageSeed() {
         console.log("Package packageSeeding completed successfully");
     } catch (err) {
         console.error("Package packageSeeding failed:", err);
-    } finally {
-        await mongoose.disconnect();
-        process.exit(0);
+        throw err
     }
 }

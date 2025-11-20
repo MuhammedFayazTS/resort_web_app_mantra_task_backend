@@ -3,14 +3,16 @@ import z, { ZodError } from "zod";
 
 import Booking from "@/models/Booking.model.js";
 import PackageModel from "@/models/Package.model.js";
+import ServicesModel from "@/models/Services.model.js";
 import { bookingValidationSchema } from "@/validators/booking.validation.js";
 
 export const addNewBooking = async (req: Request, res: Response) => {
     try {
         const bookingData = bookingValidationSchema.parse(req.body);
         const packageId = bookingData.packageId;
+        const serviceIds = bookingData.serviceIds;
 
-        const packageDetails = await PackageModel.findById(packageId);
+        const packageDetails = await PackageModel.findById(packageId).select("_id title").exec();;
 
         if (!packageDetails) {
             throw new Error("Invalid package ID");
@@ -22,6 +24,17 @@ export const addNewBooking = async (req: Request, res: Response) => {
         }
 
         Object.assign(bookingData, { packageType });
+
+        const servicesDetails = await ServicesModel.find({
+            _id: { $in: serviceIds ?? [] }
+        }).select("_id title").exec();
+
+        const services = servicesDetails.length > 0 ? servicesDetails.map(service => ({
+            serviceId: service._id,
+            title: service.title
+        })) : [];
+
+        Object.assign(bookingData, { services })
 
         const newBooking = await Booking.create(bookingData);
         res.status(201).json({
