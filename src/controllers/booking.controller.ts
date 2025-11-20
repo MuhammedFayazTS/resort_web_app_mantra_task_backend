@@ -1,12 +1,12 @@
 import { Request, Response } from "express"
 import z, { ZodError } from "zod";
 
-import Booking from "@/models/Booking.js";
+import Booking from "@/models/Booking.model.js";
 import { bookingValidationSchema } from "@/validators/booking.validation.js";
 
 export const addNewBooking = async (req: Request, res: Response) => {
     try {
-        const bookingData = bookingValidationSchema.safeParse(req.body);
+        const bookingData = bookingValidationSchema.parse(req.body);
         const newBooking = await Booking.create(bookingData);
         res.status(201).json({
             success: true,

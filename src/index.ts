@@ -1,3 +1,4 @@
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
@@ -11,6 +12,10 @@ const app = express();
 
 await connectDB();
 
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+}))
 app.use(express.json());
 
 const port = process.env.PORT ?? '3005';
