@@ -14,7 +14,7 @@ const formatZodError = (res: Response, error: ZodError) => {
     });
 };
 
-export const errorHandler: ErrorRequestHandler = (error, req, res) => {
+export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
     console.error(`Error occurred on PATH ${req.path}`, error);
 
     if (error instanceof SyntaxError) {

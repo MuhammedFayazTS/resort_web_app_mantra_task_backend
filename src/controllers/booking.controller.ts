@@ -6,7 +6,12 @@ import ServicesModel from "@/models/Services.model.js";
 import { bookingValidationSchema } from "@/validators/booking.validation.js";
 
 export const addNewBooking = async (req: Request, res: Response) => {
-    const bookingData = bookingValidationSchema.parse(req.body);
+    const parsedReqBody = bookingValidationSchema.safeParse(req.body);
+    if (!parsedReqBody.success) {
+        throw parsedReqBody.error;
+    }
+
+    const bookingData = parsedReqBody.data
     const packageId = bookingData.packageId;
     const serviceIds = bookingData.serviceIds;
 

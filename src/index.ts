@@ -26,5 +26,5 @@ app.use(routes)
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`Restaurant app backend listening on port:${port}`);
+  console.log(`Resort app backend listening on port:${port}`);
 });

@@ -17,4 +17,4 @@ export const bookingValidationSchema = z.object({
     serviceIds: z.array(z.string()).optional(),
 
     specialRequest: z.string().optional()
-})
+}).strip();
