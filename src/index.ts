@@ -12,9 +12,11 @@ const app = express();
 
 await connectDB();
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(", ")
+
 app.use(
   cors({
-    origin: '*',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   }),
 );
