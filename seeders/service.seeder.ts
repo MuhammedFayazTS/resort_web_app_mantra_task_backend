@@ -21,8 +21,22 @@ export async function serviceSeed() {
       },
     ];
 
-    await ServiceModel.deleteMany({});
-    await ServiceModel.insertMany(services);
+
+    const existing = await ServiceModel.find(
+      { title: { $in: services.map(s => s.title) } },
+      { title: 1 }
+    );
+
+    const existingTitles = new Set(existing.map(e => e.title));
+
+    const newServices = services.filter(service => !existingTitles.has(service.title));
+
+    if (newServices.length === 0) {
+      console.log("All services already exist. Skipping insert.");
+      return;
+    }
+
+    await ServiceModel.insertMany(newServices);
 
     console.log('Service Seeding completed successfully');
   } catch (err) {

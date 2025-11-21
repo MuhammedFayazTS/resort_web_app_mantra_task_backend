@@ -22,8 +22,21 @@ export async function packageSeed() {
       },
     ];
 
-    await PackageModel.deleteMany({});
-    await PackageModel.insertMany(packages);
+    const existing = await PackageModel.find(
+      { title: { $in: packages.map(p => p.title) } },
+      { title: 1 }
+    );
+
+    const existingTitles = new Set(existing.map(e => e.title));
+
+    const newPackages = packages.filter(pkg => !existingTitles.has(pkg.title));
+
+    if (newPackages.length === 0) {
+      console.log("All packages already exist. Skipping insert.");
+      return;
+    }
+
+    await PackageModel.insertMany(newPackages);
 
     console.log('Package packageSeeding completed successfully');
   } catch (err) {
