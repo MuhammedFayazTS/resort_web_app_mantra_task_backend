@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import connectDB from '../src/config/db.js';
+import connectDB from '../config/db.js';
 import { packageSeed } from './package.seeder.js';
 import { serviceSeed } from './service.seeder.js';
 

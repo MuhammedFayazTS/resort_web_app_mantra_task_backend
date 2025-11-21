@@ -1,4 +1,4 @@
-import ServiceModel from '../src/models/Services.model.js';
+import ServiceModel from '../models/Services.model.js';
 
 export async function serviceSeed() {
   try {
@@ -21,18 +21,19 @@ export async function serviceSeed() {
       },
     ];
 
-
     const existing = await ServiceModel.find(
-      { title: { $in: services.map(s => s.title) } },
-      { title: 1 }
+      { title: { $in: services.map((s) => s.title) } },
+      { title: 1 },
     );
 
-    const existingTitles = new Set(existing.map(e => e.title));
+    const existingTitles = new Set(existing.map((e) => e.title));
 
-    const newServices = services.filter(service => !existingTitles.has(service.title));
+    const newServices = services.filter(
+      (service) => !existingTitles.has(service.title),
+    );
 
     if (newServices.length === 0) {
-      console.log("All services already exist. Skipping insert.");
+      console.log('All services already exist. Skipping insert.');
       return;
     }
 

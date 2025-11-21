@@ -12,7 +12,7 @@ const app = express();
 
 await connectDB();
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(", ")
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(', ');
 
 app.use(
   cors({

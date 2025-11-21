@@ -7,8 +7,15 @@ export const bookingValidationSchema = z
     phone: z.string().min(7, 'Phone number is too short'),
     address: z.string().min(10, 'Address is too short'),
 
-    checkInDate: z.string().min(1, 'Check-in date is required'),
-    checkOutDate: z.string().min(1, 'Check-out date is required'),
+    checkInDate: z
+      .string()
+      .min(1, 'Check-in date is required')
+      .pipe(z.coerce.date({ message: 'Invalid check-in date' })),
+
+    checkOutDate: z
+      .string()
+      .min(1, 'Check-out date is required')
+      .pipe(z.coerce.date({ message: 'Invalid check-out date' })),
 
     adults: z.number().min(1, 'At least 1 adult required'),
     children: z.number().min(0),
