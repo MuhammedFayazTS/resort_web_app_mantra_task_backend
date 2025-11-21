@@ -1,9 +1,12 @@
+import { HTTPSTATUS } from "constants/httpStatus.js";
 import { Request, Response } from "express"
+import { isValidObjectId } from "mongoose";
 
-import Booking from "@/models/Booking.model.js";
+import BookingModel from "@/models/Booking.model.js";
+import Booking, { BOOKING_STATUS } from "@/models/Booking.model.js";
 import PackageModel from "@/models/Package.model.js";
 import ServicesModel from "@/models/Services.model.js";
-import { bookingValidationSchema } from "@/validators/booking.validation.js";
+import { bookingValidationSchema, bookingValidationSchemaForCheckedOut, bookingValidationSchemaForCheckIn } from "@/validators/booking.validation.js";
 
 export const addNewBooking = async (req: Request, res: Response) => {
     const parsedReqBody = bookingValidationSchema.safeParse(req.body);
@@ -50,7 +53,7 @@ export const addNewBooking = async (req: Request, res: Response) => {
     Object.assign(bookingData, { services })
 
     const newBooking = await Booking.create(bookingData);
-    res.status(201).json({
+    res.status(HTTPSTATUS.CREATED).json({
         success: true,
         data: newBooking,
         message: "Booking created successfully"
@@ -59,7 +62,7 @@ export const addNewBooking = async (req: Request, res: Response) => {
 }
 
 export const getAllBookings = async (req: Request, res: Response) => {
-    const { search = '' } = req.query
+    const { search = '', status } = req.query
     const filter: Record<string, unknown> = {};
 
     if (search && typeof search === "string") {
@@ -71,10 +74,65 @@ export const getAllBookings = async (req: Request, res: Response) => {
         ];
     }
 
-    const bookings = await Booking.find(filter);
+    if (status) filter.status = status
+
+    const [bookings, count] = await Promise.all([
+        Booking.find(filter),
+        Booking.countDocuments(filter),
+    ]);
+
     res.status(200).json({
         success: true,
         data: bookings,
+        count,
         message: "Bookings fetched successfully"
     });
-} 
+}
+
+export const getBookingById = async (bookingId: string) => {
+    if (!bookingId || !isValidObjectId(bookingId)) throw new Error("Invalid Booking Id")
+    const booking = await BookingModel.findById(bookingId)
+    if (!booking) throw new Error("Booking Not Found");
+
+    return booking
+}
+
+export const addCheckIn = async (req: Request, res: Response) => {
+    const bookingId = req.params.bookingId
+    const { actualCheckInDate } = bookingValidationSchemaForCheckIn.parse(req.body)
+    const booking = await getBookingById(bookingId)
+    if (booking.status !== BOOKING_STATUS.BOOKED) throw new Error("Check In is for booking only")
+    booking.status = BOOKING_STATUS.CHECKED_IN
+    booking.actualCheckInDate = actualCheckInDate
+    await booking.save()
+    res.status(HTTPSTATUS.OK).json({
+        success: true,
+        message: "Checked in successfully"
+    })
+}
+
+export const addCheckOut = async (req: Request, res: Response) => {
+    const bookingId = req.params.bookingId
+    const { actualCheckOutDate } = bookingValidationSchemaForCheckedOut.parse(req.body)
+    const booking = await getBookingById(bookingId)
+    if (booking.status !== BOOKING_STATUS.CHECKED_IN) throw new Error("Check In is for Checked In transaction only")
+    booking.status = BOOKING_STATUS.CHECKED_OUT
+    booking.actualCheckOutDate = actualCheckOutDate
+    await booking.save()
+    res.status(HTTPSTATUS.OK).json({
+        success: true,
+        message: "Checked out successfully"
+    })
+}
+
+export const cancelBooking = async (req: Request, res: Response) => {
+    const bookingId = req.params.bookingId
+    const booking = await getBookingById(bookingId)
+    if (booking.status !== BOOKING_STATUS.BOOKED) throw new Error("Cancellation is allowed for booking only")
+    booking.status = BOOKING_STATUS.CANCELLED
+    await booking.save()
+    res.status(HTTPSTATUS.OK).json({
+        success: true,
+        message: "Booking cancelled successfully"
+    })
+}

@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+export enum BOOKING_STATUS {
+    BOOKED = "booked",
+    CANCELLED = "cancelled",
+    CHECKED_IN = "checkedIn",
+    CHECKED_OUT = "checkedOut",
+}
+
 const BookingSchema = new mongoose.Schema(
     {
         name: { type: String, required: true, index: true },
@@ -27,7 +34,7 @@ const BookingSchema = new mongoose.Schema(
             }
         ],
 
-        status: { type: String, enum: ["booked", "checkedIn", "checkedOut", "cancelled"], default: "booked" },
+        status: { type: String, enum: [BOOKING_STATUS.BOOKED, BOOKING_STATUS.CHECKED_IN, BOOKING_STATUS.CHECKED_OUT, BOOKING_STATUS.CANCELLED], default: BOOKING_STATUS.BOOKED },
 
         specialRequest: { type: String }
     },
