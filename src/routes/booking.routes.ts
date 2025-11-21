@@ -1,7 +1,13 @@
 import express from 'express';
 import asyncHandler from 'express-async-handler';
 
-import { addCheckIn, addCheckOut, addNewBooking, cancelBooking, getAllBookings } from '@/controllers/booking.controller.js';
+import {
+  addCheckIn,
+  addCheckOut,
+  addNewBooking,
+  cancelBooking,
+  getAllBookings,
+} from '../controllers/booking.controller.js';
 
 const router = express.Router();
 
